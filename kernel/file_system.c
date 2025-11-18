@@ -167,7 +167,6 @@ void list() {
 }
 
 
-
 // file functions 
 
 uint16_t create_file(char* name) {
@@ -342,8 +341,17 @@ void paste_file(){
 void curpos(){
     DiskNode node;
     read_node(cur_sec,&node);
-    print(node.name);
-    print("\n");
+
+    if (cmp(node.name,"/")){
+        print("/");
+    } else{
+        uint16_t cur = cur_sec;
+        cur_sec = node.parent;
+        curpos();
+        print(node.name);
+        print("/");
+        cur_sec = cur;
+    }
 }
 
 void goparent(){
@@ -355,17 +363,26 @@ void goparent(){
     cur_sec = node.parent;
 }
 
-void godir(char *name){
-    uint16_t sec= find_dir(name);
-    if (cmp(name,"..")){
-        goparent();
-        return;
+void godir(char *name,int i){
+    char cur[100];
+    i = nextarg(name,i,cur,'/');
+    
+    if (len(cur)==0){
+        // nothing hehehe..
+    }   else{
+
+        if (cmp(cur,"..")){
+            goparent();
+        } else{
+            uint16_t sec= find_dir(cur);
+            if (!sec){
+                print("No Such Directory Exits!!!!\n");
+                return;
+            }
+            cur_sec = sec;
+        }
+        godir(name,i+1);
     }
-    if (!sec){
-        print("No Such Directory Exits!!!!\n");
-        return;
-    }
-    cur_sec = sec;
 }
 
 void format_disk(){
@@ -373,3 +390,5 @@ void format_disk(){
         clean_sector(i);
     }
 }
+
+

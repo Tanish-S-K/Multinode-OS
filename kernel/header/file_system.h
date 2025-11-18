@@ -31,11 +31,10 @@ void delete_file(char* name);
 int copy_file(char *name);
 void move_file(char *name);
 void paste_file();
-void godir(char *name);
+void godir(char *name,int i);
 void curpos();
 void goparent();
 void format_disk();
-
 void list();
 
 

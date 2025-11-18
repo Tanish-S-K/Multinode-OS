@@ -32,3 +32,7 @@ Challenge:
 
  ->experimenting about networking in a distributive system and the internet.
  -> added copy , move , paste command.
+
+18-11-2025:
+
+  ->upgraded the goto and pos functions to work with path as inputs instead of one step input

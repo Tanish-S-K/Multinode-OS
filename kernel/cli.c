@@ -24,7 +24,7 @@ void cli(){
         else if (cmp(parse,"goto")){
             status = nextarg(buffer,i,parse,' ');
             if (status!=-1)
-            godir(parse);
+            godir(parse,0);
         }
         else if(cmp(parse,"clear")){
             clear_screen();
