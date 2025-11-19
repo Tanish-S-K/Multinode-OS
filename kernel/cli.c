@@ -16,7 +16,7 @@ void cli(){
         else if(cmp(parse,"ndir")){
             status = nextarg(buffer,i,parse,' ');
             if (status!=-1)
-            create_dir(parse);
+            create_dir(parse,0);
         }
         else if(cmp(parse,"list")){
             list();
@@ -32,7 +32,7 @@ void cli(){
         else if(cmp(parse,"nfile")){
             status = nextarg(buffer,i,parse,' ');
             if (status!=-1)
-            create_file(parse);
+            create_file(parse,0);
         }
         else if (cmp(parse,"wfile")){
             status = nextarg(buffer,i,parse,' ');
@@ -40,14 +40,14 @@ void cli(){
                 char content[100];
                 status = nextarg(buffer,status,content,'\0');
                 if(status!=-1)
-                write_file(parse,content);
+                write_file(parse,content,0);
             }
         }
         else if (cmp(parse,"rfile")){
             status = nextarg(buffer,i,parse,' ');
             if (status!=-1){
                 char content[100];
-                read_file(parse,content);
+                read_file(parse,content,0);
                 print(content);
                 print("\n");
             }
@@ -65,14 +65,15 @@ void cli(){
             }
         }
         else if (cmp(parse,"paste")){
+            status = nextarg(buffer,i,parse,' ');
             if(status!=-1){
-                paste_file();
+                paste_file(parse);
             }
         }
         else if (cmp(parse,"dfile")){
             status = nextarg(buffer,i,parse,' ');
             if (status!=-1){
-                delete_file(parse);
+                delete_file(parse,0);
             }
         }
         else if (cmp(parse,"dformat")){

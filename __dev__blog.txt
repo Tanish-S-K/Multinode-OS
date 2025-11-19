@@ -36,3 +36,16 @@ Challenge:
 18-11-2025:
 
   ->upgraded the goto and pos functions to work with path as inputs instead of one step input
+<<<<<<< Updated upstream
+=======
+  ->upgraded the find_dir and find_file functions from vauge sequencial search to a subtree like search
+
+19-11-2025:
+
+  ->converted the single-level input file system to a path based input file system
+
+Challenge:
+  ->the 20kb of memory which is loaded by the bootloader has overflown, 
+  ->found and fixed my incrementing it to 50kb of memory to be stable
+   
+>>>>>>> Stashed changes
