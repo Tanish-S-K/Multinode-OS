@@ -23,14 +23,14 @@ typedef struct {
 extern uint16_t cur_sec;
 int init_file_system();
 
-uint16_t create_dir(char *name);
-uint16_t create_file(char* name);
-void write_file(char* name, char* content);
-int read_file(char* name,char *data);
-void delete_file(char* name);
+uint16_t create_dir(char *name,int i);
+uint16_t create_file(char* name,int i);
+void write_file(char* name,char* content,int i);
+int read_file(char* name,char *data,int i);
+void delete_file(char* name,int i);
 int copy_file(char *name);
 void move_file(char *name);
-void paste_file();
+void paste_file(char *name);
 void godir(char *name,int i);
 void curpos();
 void goparent();

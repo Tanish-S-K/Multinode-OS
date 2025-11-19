@@ -94,6 +94,7 @@ void input(char *buffer) {
 }
 
 int nextarg(char *buffer, int i, char *parse,char end){
+    if (i>=len(buffer)) return len(buffer)-1;
     int j = 0;
     while (buffer[i] == ' ') i++;
     while (buffer[i] != end && buffer[i] != '\0') {

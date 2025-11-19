@@ -9,6 +9,7 @@
 void load_bitmap();
 void save_bitmap();
 void format_disk();
+uint16_t find_dir(char* name);
 
 typedef struct {
     char name[19];
@@ -24,7 +25,6 @@ typedef struct {
 uint16_t bitmap[total_sectors+1];
 uint16_t cur_sec;
 char copy_buffer[512]="\0";
-char copy_name[100];
 
 void read_node(uint16_t sector, DiskNode* node) {
     uint16_t buffer[256];
@@ -108,7 +108,7 @@ int init_file_system() {
     return 1;
 }
 
-uint16_t create_dir(char *name) {
+uint16_t create_dir_cur(char *name) {
     uint16_t sec = salloc();
     if (!sec) {
         print("Disk full!\n");
@@ -169,7 +169,7 @@ void list() {
 
 // file functions 
 
-uint16_t create_file(char* name) {
+uint16_t create_file_cur(char* name) {
     uint16_t sec = salloc();
     if (!sec) {
         print("Disk full!\n");
@@ -208,47 +208,106 @@ uint16_t create_file(char* name) {
     return sec;
 }
 
-uint16_t find_file(char* name,uint16_t root){
+uint16_t create_file(char* name,int i){
+    char cur[1024];
+    i = nextarg(name,i,cur,'/');
+    if (name[i]=='\0') {
+        return create_file_cur(cur);
+    }
+    int ret = cur_sec;
+    int posi = find_dir(cur);
+    if (posi == 0) return 0;
+    cur_sec = posi;
+    int res = create_file(name,i+1);
+    cur_sec = ret;
+    return res;
+}
+
+uint16_t create_dir(char* name,int i){
+    char cur[1024];
+    i = nextarg(name,i,cur,'/');
+    if (name[i]=='\0') {
+        return create_dir_cur(cur);
+    }
+    int ret = cur_sec;
+    int posi = find_dir(cur);
+    if (posi == 0) return 0;
+    cur_sec = posi;
+    int res = create_dir(name,i+1);
+    cur_sec = ret;
+    return res;
+}
+
+uint16_t search_file(char* name,uint16_t root){
     DiskNode cur;
     read_node(root,&cur);
 
     if (cur.type==0 && cmp(name,cur.name)) return root;
 
     if (cur.child != 0){
-        int status= find_file(name,cur.child);
+        int status= search_file(name,cur.child);
         if (status!=0) return status;
     }
 
     if (cur.next_sib!=0){
-        int status= find_file(name,cur.next_sib);
+        int status= search_file(name,cur.next_sib);
         if (status!=0) return status;
     }
 
     return 0;
 }
 
-uint16_t find_dir(char* name,uint16_t root){
+uint16_t search_dir(char* name,uint16_t root){
     DiskNode cur;
     read_node(root,&cur);
 
     if (cur.type==1 && cmp(name,cur.name)) return root;
 
     if (cur.child != 0){
-        int status= find_dir(name,cur.child);
+        int status= search_dir(name,cur.child);
         if (status!=0) return status;
     }
     
     if (cur.next_sib!=0){
-        int status= find_dir(name,cur.next_sib);
+        int status= search_dir(name,cur.next_sib);
         if (status!=0) return status;
     }
 
     return 0;
 }
 
+uint16_t find_file(char* name){
+    DiskNode cur;
+    read_node(cur_sec,&cur);
+    if (cmp(name,"..")) return cur.parent;
 
-void write_file(char* name, char* content) {
-    uint16_t file_sec = find_file(name,cur_sec);
+    int sector = cur.child;
+
+    while (sector!=0){
+        read_node(sector,&cur);
+        if (cur.type==0 && cmp(cur.name,name)) return sector;
+        sector = cur.next_sib;
+    }
+    return 0;
+}
+
+uint16_t find_dir(char* name){
+    DiskNode cur;
+    read_node(cur_sec,&cur);
+    if (cmp(name,"..")) return cur.parent;
+
+    int sector = cur.child;
+
+    while (sector!=0){
+        read_node(sector,&cur);
+        if (cur.type == 1 && cmp(cur.name,name)) return sector;
+        sector = cur.next_sib;
+    }
+    return 0;
+}
+
+void write_file_cur(char* name, char* content) {
+    uint16_t file_sec = find_file(name);
     if (!file_sec) {
         print("No Such File Found!!\n");
         return;
@@ -267,8 +326,26 @@ void write_file(char* name, char* content) {
     }
 }
 
-int read_file(char* name,char *data) {
-    uint16_t file_sec = find_file(name,cur_sec);
+void write_file(char* name,char* content,int i){
+    char cur[1024];
+    i = nextarg(name,i,cur,'/');
+    if (name[i]=='\0') {
+        write_file_cur(cur,content);
+        return;
+    }
+    int ret = cur_sec;
+    int posi = find_dir(cur);
+    if (posi == 0) {
+        print("Path is unknown!!\n");
+        return;
+    }
+    cur_sec = posi;
+    write_file(name,content,i+1);
+    cur_sec = ret;
+}
+
+int read_file_cur(char* name,char *data) {
+    uint16_t file_sec = find_file(name);
     if (!file_sec) {
         print("No Such File Found!!\n");
         return 0;
@@ -285,8 +362,26 @@ int read_file(char* name,char *data) {
     return 1;
 }
 
-void delete_file(char* name) {
-    uint16_t file_sec = find_file(name,cur_sec);
+int read_file(char* name,char* content,int i){
+    char cur[1024];
+    i = nextarg(name,i,cur,'/');
+    if (name[i]=='\0') {
+        return read_file_cur(cur,content);
+    }
+    int ret = cur_sec;
+    int posi = find_dir(cur);
+    if (posi == 0) {
+        print("Path is unknown!!\n");
+        return 0;
+    }
+    cur_sec = posi;
+    int res = read_file(name,content,i+1);
+    cur_sec = ret;
+    return res;
+}
+
+void delete_file_cur(char* name) {
+    uint16_t file_sec = find_file(name);
     if (!file_sec) {
         print("No Such File Exist!!!\n");
         return;
@@ -331,21 +426,38 @@ void delete_file(char* name) {
     print("File deleted successfully\n");
 }
 
+void delete_file(char* name,int i){
+    char cur[1024];
+    i = nextarg(name,i,cur,'/');
+    if (name[i]=='\0') {
+        delete_file_cur(cur);
+        return;
+    }
+    int ret = cur_sec;
+    int posi = find_dir(cur);
+    if (posi == 0) {
+        print("Path is unknown!!\n");
+        return;
+    }
+    cur_sec = posi;
+    delete_file(name,i+1);
+    cur_sec = ret;
+}
+
 int copy_file(char *name){
-    int status = read_file(name,copy_buffer);
-    if (status) cpy(copy_name,name,0);
+    int status = read_file(name,copy_buffer,0);
     return status;
 }
 
 void move_file(char *name){
     if (copy_file(name))
-    delete_file(name);
+    delete_file(name,0);
 }
 
-void paste_file(){
+void paste_file(char *name){
     if (copy_buffer[0]){
-        create_file(copy_name);
-        write_file(copy_name,copy_buffer);
+        create_file(name,0);
+        write_file(name,copy_buffer,0);
         return;
     }
     print("No Data Available!!\n");
@@ -379,7 +491,7 @@ void goparent(){
 void godir(char *name,int i){
     char cur[100];
     i = nextarg(name,i,cur,'/');
-    
+
     if (len(cur)==0){
         // nothing hehehe..
     }   else{
@@ -387,7 +499,7 @@ void godir(char *name,int i){
         if (cmp(cur,"..")){
             goparent();
         } else{
-            uint16_t sec= find_dir(cur,cur_sec);
+            uint16_t sec= find_dir(cur);
             if (!sec){
                 print("No Such Directory Exits!!!!\n");
                 return;
