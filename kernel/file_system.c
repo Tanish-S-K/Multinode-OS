@@ -3,7 +3,9 @@
 #define total_sectors 2048
 #define bitmap_start 200
 #define entry_start 210
-#define entry_end 1000
+#define entry_end 910
+#define user_start 911
+#define user_end 1000
 #define data_start 1001
 
 void load_bitmap();
@@ -13,6 +15,7 @@ uint16_t find_dir(char* name);
 
 typedef struct {
     char name[19];
+    uint8_t user;
     uint8_t type;
     uint16_t parent;
     uint16_t child;
@@ -23,6 +26,7 @@ typedef struct {
 } DiskNode;
 
 uint16_t bitmap[total_sectors+1];
+uint16_t user_root;
 uint16_t cur_sec;
 char copy_buffer[512]="\0";
 
@@ -48,6 +52,9 @@ void print_bit(){
     }
 }
 
+int check_bit(int sector){
+    return bitmap[sector];
+}
 
 void load_bitmap() {
     uint16_t buffer[256];
@@ -66,6 +73,10 @@ void save_bitmap() {
     }
 }
 
+void set_bit(int sector,uint16_t val){
+    bitmap[sector] = val;
+    save_bitmap();
+}
 
 uint16_t salloc() {
     load_bitmap();

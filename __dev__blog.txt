@@ -41,6 +41,7 @@ Challenge:
 19-11-2025:
 
   ->converted the single-level input file system to a path based input file system
+  ->redesigned the authentication system to make multiuser-multidata possible;
 
 Challenge:
   ->the 20kb of memory which is loaded by the bootloader has overflown, 

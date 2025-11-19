@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "mystdlib.h"
 
-int authenticate(int status);
+void create_user();
+int authenticate();
 
 #endif

@@ -1,5 +1,6 @@
 #include "header/mystdlib.h"
 #include "header/file_system.h"
+#include "header/auth.h"
 
 void cli(){
     char buffer[100],parse[100];
@@ -79,9 +80,13 @@ void cli(){
         else if (cmp(parse,"dformat")){
             format_disk();
         }
+        else if (cmp(parse,"nuser")){
+            create_user();
+        }
         else if (!cmp(parse,"exit")){
             print("Only Use My Commands.. lol...\n");
         }
+
         print("\n");
     } while(!cmp(parse,"exit"));
     print("Out of the System");

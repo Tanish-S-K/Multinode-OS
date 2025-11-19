@@ -2,35 +2,60 @@
 #include "header/mystdlib.h"
 #include "header/file_system.h"
 
-int authenticate(int status){
+#define user_start 911
+#define user_end 1000
+
+typedef struct {
+	char username[100];
+	char password[100];
+} crendentials;
+
+void create_user(){
 	char buffer[512];
-	int i=0;
-	char name[100],pass[100];
-	read_sector(255,(uint16_t *)buffer);
+	crendentials *node = (crendentials *)mem(sizeof(crendentials));
+	cur_sec = entry_start;
+	for(int i=user_start;i<user_end;i++){
+    	if(!check_bit(i)) {
+    		print("Set Username: ");
+			input(node->username);
+			print("\nSet Password: ");
+			input(node->password);
+			print("\n");
+			mem_cpy(buffer,node,sizeof(crendentials));
+			write_sector(i,(uint16_t *)buffer);
+			set_bit(i,1);
+			create_dir(node->username,0);
+			godir(node->username,0);
+			return;
+    	}
+    }
+    print("Too many users exist!!!\n");
 	
-	if(status){
-		print("Set Username >> ");
-		input(name);
-		print("\n");
-		print("Set Password >> ");
-		input(pass);
-		print("\n");
-		i = cpy(buffer,name,1);
-		buffer[i] = ' ';
-		i = cpy(buffer,pass,i+1);
-		write_sector(255,(uint16_t *)buffer);
-		return 1;
+}
+int authenticate(){
+	
+	if(!check_bit(911)){
+		create_user();
+		return 911;
 	}
+	char buffer[512];
+	crendentials *node = (crendentials *)mem(sizeof(crendentials));
 	char username[100],password[100];
-	print("Enter the Username : ");
-	input(name);
+
+	print("\nEnter Username: ");
+	input(username);
+	print("\nEnter Password: ");
+	input(password);
 	print("\n");
-	print("Enter the Password : ");
-	input(pass);
-	print("\n");
-	i = nextarg(buffer,1,username,' ');
-	i = nextarg(buffer,i,password,'\0');
-	
-	
-	return cmp(username,name)&cmp(password,pass);
+
+    for(int i=user_start;i<user_end;i++){
+    	read_sector(i,(uint16_t *)buffer);
+    	mem_cpy(node,buffer,sizeof(crendentials));
+    	
+    	if (cmp(node->username,username) && cmp(node->password,password)){
+    		godir(node->username,0);
+    		return i;
+    	}
+    }
+    return 0;
 }
