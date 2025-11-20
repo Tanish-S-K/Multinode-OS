@@ -25,6 +25,8 @@ int init_file_system();
 int check_bit(int sector);
 void set_bit(int sector,uint16_t val);
 void load_bitmap();
+void set_user(uint16_t user_sector);
+uint16_t find_dir(char* name);
 
 uint16_t create_dir(char *name,int i);
 uint16_t create_file(char* name,int i);

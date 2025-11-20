@@ -24,8 +24,9 @@ void create_user(){
 			mem_cpy(buffer,node,sizeof(crendentials));
 			write_sector(i,(uint16_t *)buffer);
 			set_bit(i,1);
-			create_dir(node->username,0);
+			int sec = create_dir(node->username,0);
 			godir(node->username,0);
+			set_user(sec);
 			return;
     	}
     }
@@ -53,7 +54,9 @@ int authenticate(){
     	mem_cpy(node,buffer,sizeof(crendentials));
     	
     	if (cmp(node->username,username) && cmp(node->password,password)){
+    		int sec = find_dir(node->username);
     		godir(node->username,0);
+    		set_user(sec);
     		return i;
     	}
     }

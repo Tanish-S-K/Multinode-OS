@@ -64,7 +64,9 @@ void load_bitmap() {
     }
 }
 
-
+void set_user(uint16_t user_sector){
+    user_root = user_sector;
+}
 void save_bitmap() {
     uint16_t buffer[256];
     for (int i=0;i<total_sectors/256;i++) {
@@ -290,7 +292,15 @@ uint16_t search_dir(char* name,uint16_t root){
 uint16_t find_file(char* name){
     DiskNode cur;
     read_node(cur_sec,&cur);
-    if (cmp(name,"..")) return cur.parent;
+    if (cmp(name,"..")) {
+        if(cur_sec == user_root) {
+            print("Acess Denied\n");
+            return 0;
+        }
+        else{
+            return cur.parent;
+        }
+    }
 
     int sector = cur.child;
 
@@ -305,8 +315,15 @@ uint16_t find_file(char* name){
 uint16_t find_dir(char* name){
     DiskNode cur;
     read_node(cur_sec,&cur);
-    if (cmp(name,"..")) return cur.parent;
-
+    if (cmp(name,"..")) {
+        if(cur_sec == user_root) {
+            print("Acess Denied\n");
+            return 0;
+        }
+        else{
+            return cur.parent;
+        }
+    }
     int sector = cur.child;
 
     while (sector!=0){
@@ -506,9 +523,14 @@ void godir(char *name,int i){
     if (len(cur)==0){
         // nothing hehehe..
     }   else{
-
+        
         if (cmp(cur,"..")){
-            goparent();
+            if (cur_sec == user_root){
+                print("Access Denied\n");
+                return;
+            } else{
+                goparent();
+            }
         } else{
             uint16_t sec= find_dir(cur);
             if (!sec){
