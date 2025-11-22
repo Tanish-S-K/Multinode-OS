@@ -51,3 +51,8 @@ Challenge:
 
   ->implemented protection system to seperate each user data and file system
   ->implemented multinodal synchronization with shared memory and synchronised write operations
+
+22-11-2025:
+
+  ->implemented shutdown and restart options
+  ->prepared readme for the project
