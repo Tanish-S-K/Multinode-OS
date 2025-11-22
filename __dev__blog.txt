@@ -46,3 +46,8 @@ Challenge:
 Challenge:
   ->the 20kb of memory which is loaded by the bootloader has overflown, 
   ->found and fixed my incrementing it to 50kb of memory to be stable
+
+20-11-2025:
+
+  ->implemented protection system to seperate each user data and file system
+  ->implemented multinodal synchronization with shared memory and synchronised write operations
