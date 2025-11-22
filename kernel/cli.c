@@ -2,6 +2,9 @@
 #include "header/file_system.h"
 #include "header/auth.h"
 
+void shutdown();
+void restart();
+
 void cli(){
     char buffer[100],parse[100];
     int i,status;
@@ -83,11 +86,36 @@ void cli(){
         else if (cmp(parse,"nuser")){
             create_user();
         }
-        else if (!cmp(parse,"exit")){
-            print("Only Use My Commands.. lol...\n");
+        else if (cmp(parse,"shutdown")) {
+            shutdown();
+            return;
         }
 
+        else if (cmp(parse,"restart")) {
+            restart();
+            return;
+        }
+        else{
+            print("Use only my command... hehehe...");
+        }
         print("\n");
-    } while(!cmp(parse,"exit"));
-    print("Out of the System");
+    } while(1);
+}
+
+void shutdown() {
+    outw(0x604, 0x2000);
+}
+
+void restart() {
+    uint8_t temp;
+
+    asm volatile("cli");
+
+    do {
+        temp = inb(0x64);
+    } while (temp & 0x02);
+
+    outb(0x64, 0xFE);
+    asm volatile ("lidt (0)");
+    asm volatile ("int $3");
 }
