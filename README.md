@@ -1,7 +1,10 @@
 **⚙️ Custom 32-bit Distributed Storage OS — Multinode Realtime Sync**
 
-        A custom-built 32-bit distributed storage operating system written in no-lib C + x86 assembly, supporting multiple nodes sharing a single virtual disk with atomic realtime synchronization.
-        The OS includes Multinode sync using shared block device execution providing realtime data sync, Multi-user isolation,Persistent hierarchical filesystem,Custom ATA PIO storage driver,Full interactive CLI.
+        A custom-built 32-bit distributed storage operating system written in no-lib C + x86 assembly, 
+        supporting multiple nodes sharing a single virtual disk with atomic realtime synchronization.
+        The OS includes Multinode sync using shared block device execution providing realtime data sync,
+        Multi-user isolation,Persistent hierarchical filesystem,Custom ATA PIO storage driver,Full 
+        interactive CLI.
 
 **📷 Demo**
 
@@ -73,7 +76,7 @@
 
 **High level file system overview**
   
-        <img width="1024" height="1024" alt="Gemini_Generated_Image_rwjg2lrwjg2lrwjg" src="https://github.com/user-attachments/assets/cf1eff1e-8cf7-4c8a-b06a-fdde748a54ec" />
+        ![Alt text](https://github.com/Tanish-S-K/Distributed-System-OS-/tree/main/images/i1.png)
         
 
 **3️⃣ 🧱 Entry Node Structure (DiskNode Format)**
