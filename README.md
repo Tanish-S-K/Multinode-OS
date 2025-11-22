@@ -13,21 +13,21 @@ The OS provides multi-user isolation with data seperation and protection, a hier
 
 **⭐ Features**
 
-🟦 Shared-disk multinode execution
+-> Shared-disk multinode execution
 
-🟩 Atomic realtime synchronization between nodes
+-> Atomic realtime synchronization between nodes
 
-🗂️ Custom hierarchical filesystem
+-> Custom hierarchical filesystem
 
-💾 Persistent ATA PIO sector I/O
+-> Persistent ATA PIO sector I/O
 
-👥 Multiple isolated users with data seperation and protection
+-> Multiple isolated users with data seperation and protection
 
-📁 Path-based recursive operations
+-> Path-based recursive operations
 
-🧠 Custom stdlib with custom memory management, parsing, string ops, I/O ops. 
+-> Custom stdlib with custom memory management, parsing, string ops, I/O ops. 
 
-🖥️ 14-command interactive CLI
+-> 14-command interactive CLI
 
 **🛠️ Technologies Used**
 
