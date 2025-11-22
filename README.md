@@ -139,8 +139,7 @@ size          : file size (bytes)
                            │  Disk (IDE/ATA/NBD Virtual) │
                            └────────────────────────────┘
 
-**2️⃣ ⭐ Distributed Execution Model**
-
+2️⃣ ⭐ Distributed Execution Model
                  ┌──────────────┐
                  │    Node 1     │
                  └───────┬──────┘
@@ -180,16 +179,16 @@ User authentication
 CLI shell
 
 4️⃣ 💠 How OS Works in Virtual Mode
-🟦 Step 1 — Disk Image → Virtual Block Device
+-> Step 1 — Disk Image → Virtual Block Device
 
 The OS image becomes a virtual IDE/NBD-backed disk.
 Reads/writes map to ATA PIO operations.
 
-🟩 Step 2 — VM Boots from This Virtual Disk
+-> Step 2 — VM Boots from This Virtual Disk
 
 BIOS loads bootloader → bootloader loads kernel.
 
-🟧 Step 3 — Multinode Execution
+-> Step 3 — Multinode Execution
 
 Multiple VMs attach to the same virtual block device, enabling:
 
@@ -249,13 +248,13 @@ restart          → reboot OS
 
 **🚀 Build & Run Instructions**
 
-🟦 1. Build Disk + Kernel
+-> 1. Build Disk + Kernel
 make set
 
-🟩 2. Run Node Instance (example: instance 1)
+-> 2. Run Node Instance (example: instance 1)
 make run1
 
-🟧 3. Run Multiple Nodes
+-> 3. Run Multiple Nodes
 
 Example for k nodes:
 
