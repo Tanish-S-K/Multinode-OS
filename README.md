@@ -1,52 +1,51 @@
-**⚙️ Custom 32-bit Distributed Storage OS — Multinode Realtime Sync**
+⚙️ Custom 32-bit Distributed Storage OS — Multinode Realtime Sync
 
-A custom-built 32-bit distributed storage operating system written in no-lib C + x86 assembly, supporting multiple nodes sharing a single disk with atomic, realtime synchronization.
-The OS provides multi-user isolation with data seperation and protection, a hierarchical filesystem with data persistency, a custom ATA PIO storage layer, and a full interactive CLI.
+A custom-built 32-bit distributed storage operating system written in no-lib C + x86 assembly, supporting multiple nodes sharing a single disk with atomic realtime synchronization.
+Provides multi-user isolation, a hierarchical persistent filesystem, a custom ATA PIO storage stack, and a complete interactive CLI.
 
-**📷 Demo**
+📷 Demo
 
 (Add images / GIFs here)
 
-**🎥 Video**
+🎥 Video
 
 (Add link here)
 
-**⭐ Features**
+⭐ Features
 
--> Shared-disk multinode execution
+Shared-disk multinode execution
 
--> Atomic realtime synchronization between nodes
+Atomic realtime synchronization between nodes
 
--> Custom hierarchical filesystem
+Custom hierarchical filesystem
 
--> Persistent ATA PIO sector I/O
+Persistent ATA PIO sector I/O
 
--> Multiple isolated users with data seperation and protection
+Multiple isolated users with data separation & protection
 
--> Path-based recursive operations
+Path-based recursive operations
 
--> Custom stdlib with custom memory management, parsing, string ops, I/O ops. 
+Custom stdlib (memory management, parsing, I/O, string ops)
 
--> 14-command interactive CLI
+14-command interactive CLI
 
-**🛠️ Technologies Used**
+🛠️ Technologies Used
 
 C (freestanding, no stdlib)
 
-x86 Assembly (16-bit + 32-bit protected mode)
+x86 Assembly: 16-bit Real Mode + 32-bit Protected Mode
 
 Custom GDT/IDT setup
 
 Custom ATA PIO driver
 
-QEMU for CPU + device virtualization
+QEMU (CPU + device virtualization)
 
 NBD (Network Block Device) for multinode shared-disk execution
 
-make for project compilation and running automation
+Makefile-based build + run automation
 
-**📦 Project Structure**
-
+📦 Project Structure
 OS/
 ├── boot/
 │   └── bootloader.asm
@@ -69,24 +68,21 @@ OS/
 ├── Makefile
 └── README.md
 
-**🧩 Architectures**
+🧩 Architectures
+1️⃣ 📀 Disk Sector Format (On-Disk Layout)
+┌───────────────────────────────────────────────┐
+│ 0–199     : Bootloader + Kernel + Drivers     │
+├───────────────────────────────────────────────┤
+│ 200–209   : Bitmap (allocation table)         │
+├───────────────────────────────────────────────┤
+│ 210–910   : DiskNode Metadata Table           │
+├───────────────────────────────────────────────┤
+│ 911–999   : User Credentials                  │
+├───────────────────────────────────────────────┤
+│ 1000–2047 : File Data (raw sectors)           │
+└───────────────────────────────────────────────┘
 
-**1️⃣ 📀 Disk Sector Format (On-Disk Layout)**
-
-  ┌───────────────────────────────────────────────┐
-  │ 0–199     : Bootloader + Kernel + Drivers     │
-  ├───────────────────────────────────────────────┤
-  │ 200–209   : Bitmap (allocation table)         │
-  ├───────────────────────────────────────────────┤
-  │ 210–910   : DiskNode Metadata Table           │
-  ├───────────────────────────────────────────────┤
-  │ 911–999   : User Credentials                  │
-  ├───────────────────────────────────────────────┤
-  │ 1000–2047 : File Data (raw sectors)           │
-  └───────────────────────────────────────────────┘
-
-**2️⃣ 📂 Runtime Filesystem Structure (2–3 Levels)**
-
+2️⃣ 📂 Runtime Filesystem Structure (2–3 Levels)
 ROOT ("/")
 │
 ├── userA_root/
@@ -97,169 +93,161 @@ ROOT ("/")
     ├── code/
     └── notes/
 
-**3️⃣ 🧱 Entry Node Structure (DiskNode Format)**
-
-DiskNode (stored in sectors 210–910)
+3️⃣ 🧱 Entry Node Structure (DiskNode Format)
+DiskNode (sector 210–910)
 -------------------------------------
-name[19]      : file/dir name
-type          : 1 = dir, 0 = file
+name[19]      : filename / dirname
+type          : 1 = directory, 0 = file
 user          : owner id
 parent        : parent sector id
 child         : first child sector
 next_sib      : next sibling
 prev_sib      : previous sibling
-data_sector   : pointer to file data (1000–2047)
-size          : file size (bytes)
+data_sector   : file data pointer (1000–2047)
+size          : file size in bytes
 
-**🧠 How It Works**
+🧠 How It Works
+1️⃣ 🧩 Internal Architecture (UML Overview)
+┌──────────────────────────────────────────────────────────────────┐
+│                              Kernel                              │
+└──────────────────────────────────────────────────────────────────┘
+          ▲                        ▲                        ▲
+          │                        │                        │
 
-**1️⃣ 🧩 UML Diagram — Internal Architecture**
-
-┌────────────────────────────────────────────────────────────────┐
-│                              Kernel                            │
-└────────────────────────────────────────────────────────────────┘
-            ▲                          ▲                       ▲
-
-┌──────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐
-│        CLI Shell         │   │   Filesystem Manager    │   │      ATA PIO Driver     │
-└───────────┬──────────────┘   └─────────────┬───────────┘   └───────────┬────────────┘
-            │                                │                           │
-            ▼                                ▼                           ▼
-                   ┌──────────────────────────────────────────┐
-                   │              Node Manager                 │
-                   └───────────────────┬──────────────────────┘
-                                       │
-                                       ▼
-                           ┌────────────────────────────┐
-                           │  Sync Layer (Atomic Write) │
-                           └───────────────┬────────────┘
-                                           │
-                                           ▼
-                           ┌────────────────────────────┐
-                           │  Disk (IDE/ATA/NBD Virtual) │
-                           └────────────────────────────┘
+┌──────────────────────────┐   ┌─────────────────────────┐  ┌─────────────────────────┐
+│        CLI Shell         │   │   Filesystem Manager    │  │     ATA PIO Driver      │
+└───────────┬──────────────┘   └─────────────┬───────────┘  └───────────┬────────────┘
+            │                                │                          │
+            ▼                                ▼                          ▼
+                       ┌──────────────────────────────────────────┐
+                       │              Node Manager                 │
+                       └──────────────────┬───────────────────────┘
+                                          │
+                                          ▼
+                               ┌────────────────────────────┐
+                               │   Sync Layer (Atomic I/O)  │
+                               └───────────────┬────────────┘
+                                               │
+                                               ▼
+                               ┌────────────────────────────┐
+                               │   Disk (IDE / ATA / NBD)   │
+                               └────────────────────────────┘
 
 2️⃣ ⭐ Distributed Execution Model
-                 ┌──────────────┐
-                 │    Node 1     │
-                 └───────┬──────┘
-                         │
-                         │ (Shared Disk)
-                         ▼
-        ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-        │    Node 2     │   │    Node 3     │   │    Node 4     │
-        └──────────────┘   └──────────────┘   └──────────────┘
+                   ┌──────────────┐
+                   │    Node 1     │
+                   └───────┬──────┘
+                           │
+                           │  (Shared Virtual Disk)
+                           ▼
+           ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+           │    Node 2     │   │    Node 3     │   │    Node 4     │
+           └──────────────┘   └──────────────┘   └──────────────┘
 
 
-All nodes view the exact same disk image → perfect global sync.
+All nodes read/write the same disk → realtime, global sync.
 
-**3️⃣ ⚡ Boot Sequence**
-
+3️⃣ ⚡ Boot Sequence
 CPU Reset
    ▼
 BIOS loads MBR (sector 0)
    ▼
 Bootloader executes (16-bit)
    ▼
-Loads kernel from disk
+Bootloader loads kernel from disk
    ▼
-Enable Protected Mode (GDT + CR0)
+Enable 32-bit Protected Mode (GDT + CR0)
    ▼
-Kernel Init
-   - ATA PIO Init
-   - Interrupts
+Kernel Initialization
+   - ATA PIO driver
+   - Interrupts + IDT
    - PIT
-   - Video
+   - Terminal screen
+   - Memory management
    - Filesystem init
    ▼
-Load bitmap + root DiskNode
+Load bitmap + root node
    ▼
 User authentication
    ▼
 CLI shell
 
 4️⃣ 💠 How OS Works in Virtual Mode
--> Step 1 — Disk Image → Virtual Block Device
+Step 1 — Disk Image → Virtual Block Device
 
-The OS image becomes a virtual IDE/NBD-backed disk.
-Reads/writes map to ATA PIO operations.
+The OS image is mapped as a virtual IDE/NBD-backed disk device.
+Reads/writes translate into ATA PIO sector operations.
 
--> Step 2 — VM Boots from This Virtual Disk
+Step 2 — VM Boots From This Virtual Disk
 
-BIOS loads bootloader → bootloader loads kernel.
+BIOS → Bootloader → Kernel → Filesystem init → CLI.
 
--> Step 3 — Multinode Execution
+Step 3 — Multinode Execution
 
-Multiple VMs attach to the same virtual block device, enabling:
+Multiple QEMU instances attach to the same disk, enabling:
 
-Instant cross-node visibility
+Instant visibility of changes
 
 Shared bitmap
 
-Cross-node metadata consistency
+Globally consistent metadata
 
-**5️⃣ 🔗 Realtime Sync Explanation (Write Path)**
+Atomic write commits
 
+5️⃣ 🔗 Realtime Sync — Write Path
 USER COMMAND
-      ▼
-CLI
-      ▼
+     ▼
+CLI Shell
+     ▼
 Filesystem Manager
-      ▼
+     ▼
 Node Manager
   - lock FS
   - allocate sectors (bitmap)
   - update metadata
-      ▼
+     ▼
 Sync Layer
-  - atomic sector commits
-      ▼
+  - atomic sector writes
+     ▼
 ATA PIO Driver
-  - writes to disk
+  - physical disk write
 
+Guarantees
 
-Guarantees:
-
-Atomic metadata updates
+Atomic filesystem metadata
 
 Bitmap never corrupted
 
-All nodes see same state
+All nodes see the same state
 
-**🖥️ CLI Commands (Reference)**
+🖥️ CLI Commands (Reference)
+ndir <path>      → create directory  
+nfile <path>     → create file  
+wfile <path>     → write to file  
+rfile <path>     → read file  
+dfile <path>     → delete file  
 
-ndir <path>      → create directory
-nfile <path>     → create file
-wfile <path>     → write to file
-rfile <path>     → read file
-dfile <path>     → delete file
+goto <path>      → change directory  
+list             → list entries  
+curpos           → show current path  
 
-goto <path>      → change directory
-list             → list entries
-curpos           → show current path
+cpy <path>       → copy file  
+paste <path>     → paste copied file  
 
-cpy <path>       → copy file
-paste <path>     → paste copied file
+dformat          → format disk  
+nuser            → create user  
 
-dformat          → format disk
-nuser            → create user
-shutdown         → shutdown OS
-restart          → reboot OS
+shutdown         → shutdown OS  
+restart          → reboot OS  
 
-**🚀 Build & Run Instructions**
-
--> 1. Build Disk + Kernel
+🚀 Build & Run Instructions
+1️⃣ Build disk + kernel
 make set
 
--> 2. Run Node Instance (example: instance 1)
+2️⃣ Run a node (example: node 1)
 make run1
 
--> 3. Run Multiple Nodes
-
-Example for k nodes:
-
+3️⃣ Run multiple nodes (example: k = 3)
 make run1
 make run2
-.
-.
-make runk
+make run3
