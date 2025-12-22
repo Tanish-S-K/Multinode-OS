@@ -73,10 +73,10 @@
 
 **High level file system overview**
   
-        ![Alt text](https://github.com/Tanish-S-K/Distributed-System-OS-/tree/main/images/i1.png)
+        pass
         
 
-**3️⃣ 🧱 Entry Node Structure (DiskNode Format)**
+** 🧱 Entry Node Structure (DiskNode Format)**
 
         DiskNode (210–910)
         ------------------
@@ -90,22 +90,7 @@
         data_sector  → pointer to file data (1000–2047)
         size         → file size (bytes)
 
-**🧠 How It Works**
-
-**1️⃣ 🧩 UML Diagram — Internal Architecture**
-
-        <img width="1024" height="1024" alt="Gemini_Generated_Image_8o2vdt8o2vdt8o2v" src="https://github.com/user-attachments/assets/f02809ef-3a71-4d62-aa03-3169daf765d5" />
-
-
-**2️⃣ ⭐ Distributed Execution Model**
-
-        
-        <img width="1024" height="1024" alt="Gemini_Generated_Image_7s64nx7s64nx7s64" src="https://github.com/user-attachments/assets/39aaddba-249f-429e-a906-e20f2713d626" />
-
-        
-        All nodes share the same disk image, guaranteeing immediate global sync.
-
-**3️⃣ ⚡ Boot Sequence**
+**⚡ Boot Sequence**
 
         CPU Reset
            ↓
@@ -130,7 +115,7 @@
            ↓
         CLI Shell
 
-**4️⃣ 💠 How OS Works in Virtual Mode**
+**💠 How OS Works in Virtual Mode**
 
         🔹 Step 1 — Virtual Disk Creation
         
@@ -146,7 +131,7 @@
         Multiple VMs attach to the same virtual block device →
         Writes from one node instantly appear in all nodes.
 
-**5️⃣ 🔗 Realtime Sync Explanation (Write Path)**
+**🔗 Realtime Sync Explanation (Write Path)**
 
         USER COMMAND
              ↓
