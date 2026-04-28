@@ -11,7 +11,6 @@
 ---
 
 [![Demo Video](https://img.shields.io/badge/Demo-Google%20Drive-blue?logo=googledrive)](https://drive.google.com/file/d/1973q_ohmqSTnc7vITdf72fYgvUf7jBHP/view?usp=sharing)
-![Language](https://img.shields.io/github/languages/top/Tanish-S-K/Multinode-OS)
 ![License](https://img.shields.io/github/license/Tanish-S-K/Multinode-OS)
 
 </div>
